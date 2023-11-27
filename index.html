@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Machine Learning Final Project</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        body {
+            font-family: "Times New Roman", Georgia, Serif;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "Playfair Display";
+            letter-spacing: 5px;
+        }
+    </style>
+
+    <!-- Teachable Machine Script Tags -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script type="text/javascript">
+        //const URL = "https://teachablemachine.withgoogle.com/models/1pc1--r9u/";
+	    const URL = "https://teachablemachine.withgoogle.com/models/pGaoL1H6N/";
+
+        let model, webcam, labelContainer, maxPredictions;
+
+        //async function init() {
+        //    const modelURL = URL + "model.json";
+        //    const metadataURL = URL + "metadata.json";
+
+        //    model = await tmImage.load(modelURL, metadataURL);
+        //    maxPredictions = model.getTotalClasses();
+
+        //    const flip = true;
+        //    webcam = new tmImage.Webcam(200, 200, flip);
+        //    await webcam.setup();
+        //    await webcam.play();
+        //    window.requestAnimationFrame(loop);
+
+        //    document.getElementById("webcam-container").appendChild(webcam.canvas);
+        //    labelContainer = document.getElementById("label-container");
+        //    for (let i = 0; i < maxPredictions; i++) {
+        //        labelContainer.appendChild(document.createElement("div"));
+        //    }
+        //}
+		
+		async function init() {
+		    const modelURL = URL + "model.json";
+		    const metadataURL = URL + "metadata.json";
+		
+		    model = await tmImage.load(modelURL, metadataURL);
+		    maxPredictions = model.getTotalClasses();
+		
+		    const flip = true;
+		    // Increase the width and height for a larger webcam
+		    webcam = new tmImage.Webcam(400, 400, flip); // You can adjust the dimensions as needed
+		    await webcam.setup();
+		    await webcam.play();
+		    window.requestAnimationFrame(loop);
+		
+		    document.getElementById("webcam-container").appendChild(webcam.canvas);
+		    labelContainer = document.getElementById("label-container");
+		    for (let i = 0; i < maxPredictions; i++) {
+		        labelContainer.appendChild(document.createElement("div"));
+		    }
+		}
+
+
+        async function loop() {
+            webcam.update();
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        async function predict() {
+            const prediction = await model.predict(webcam.canvas);
+
+            let maxIndex = 0;
+            let maxProbability = 0;
+
+            for (let i = 0; i < maxPredictions; i++) {
+                if (prediction[i].probability > maxProbability) {
+                    maxProbability = prediction[i].probability;
+                    maxIndex = i;
+                }
+            }
+
+            const classPrediction = prediction[maxIndex].className;
+            labelContainer.innerHTML = classPrediction;
+        }
+
+        // Call init() when the page loads
+        window.onload = function () {
+            init();
+        };
+
+		// Function to open the modal
+		function openModal() {
+		    document.getElementById('myModal').style.display = 'block';
+		}
+		
+		// Function to close the modal
+		function closeModal() {
+		    document.getElementById('myModal').style.display = 'none';
+		}
+
+
+    </script>
+    <!-- End Teachable Machine Script Tags -->
+
+</head>
+
+<body>
+
+    <!-- Navbar (sit on top) -->
+    <div class="w3-top">
+        <div class="w3-bar w3-white w3-padding w3-card" style="letter-spacing:4px;">
+            <a href="#home" class="w3-bar-item w3-button">Sign Language Recognition</a>
+        </div>
+    </div>
+
+    <!-- Page content -->
+    <div class="w3-content" style="max-width:1100px">
+
+        <!-- About Section -->
+        <div class="w3-row w3-padding-64" id="about">
+            <div class="w3-center m6 w3-padding-large">
+                <h1 class="w3-center">Sign Language Recognition</h1>
+                <h5 class="w3-center">Bridging Communication Through Technology</h5>
+                <br>
+                <p class="w3-large">Dijaman sekarang era teknologi sudah semakin berkembang dan sudah diperlukan oleh para pengguna untuk memenuhi kebutuhan bagi para pengguna. Oleh karena itu dibutuhkan sebuah aplikasi bahasa isyarat untuk mengembangkan aplikasi sign language recogntion bertujuan mendukung inklusivitas bagi komunitas penyandang tuna rungu. Menggunakan teknologi pengenalan gambar dan machine learning, aplikasi ini menerjemahkan gerakan sign language abjad ke dalam bentuk huruf, memfasilitasi komunikasi lebih mudah antara individu dengan gangguan pendengaran dan masyarakat umum. Diharapkan dapat mengurangi kesenjangan komunikasi dan menciptakan lingkungan inklusif yang mempromosikan partisipasi setara dalam berbagai kegiatan sehari-hari.
+                </p>
+            </div>
+        </div>
+
+        <!-- Teachable Machine Section -->
+        <div class="w3-row" id="teachable-machine-section">
+            <div class="w3-center m6 w3-padding-large">
+                <!-- Teachable Machine Webcam and Label Containers -->
+                <div id="webcam-container"></div>
+                <div id="label-container"></div>
+                <!-- End Teachable Machine Containers -->
+                <!-- Other content in this section -->
+            </div>
+        </div>
+	
+		<!-- Modal Container -->
+		<div id="myModal" class="w3-modal">
+		    <div class="w3-modal-content">
+		        <span class="w3-button w3-display-topright" onclick="closeModal()">&times;</span>
+		        <img src="./signlanguage.jpeg" style="width:100%">
+		    </div>
+		</div>
+		
+		<br>
+		
+		<!-- Button to Open Modal -->
+		<div class="w3-center">
+			<button onclick="openModal()"><p>Guide</p></button>
+		</div>
+
+
+        <!-- Menu Section -->
+        <div class="w3-row w3-padding-64" id="menu">
+            <div class="w3-center l6 w3-padding-large">
+                <h1 class="w3-center">Our Team</h1><br>
+                <h4 class="w3-center">Privan Nabut</h4>
+                <br>
+                <h4 class="w3-center">Timothy Mulalinda</h4>
+                <br>
+                <h4 class="w3-center">Angel Pangkey</h4>
+                <br>
+                <h4 class="w3-center">Lianny Sakul</h4>
+                <br>
+                <h4 class="w3-center">Chuang Jonathan</h4>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- End page content -->
+    </div>
+
+    <!-- Footer -->
+    <footer class="w3-center w3-light-grey w3-padding-32">
+        <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank"
+                class="w3-hover-text-green">w3.css</a></p>
+    </footer>
+
+</body>
+
+</html>
